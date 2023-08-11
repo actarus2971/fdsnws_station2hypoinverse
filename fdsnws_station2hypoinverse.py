@@ -30,7 +30,7 @@ def parseArguments():
         parser.add_argument('--station', help='network,station')
         parser.add_argument('--stations_file', help='list of network station lines')
         parser.add_argument('--conf', default='./ws_agency_route.conf', help="agency webservices routes list type (default: %(default)s)")
-        parser.add_argument('--agency', default='ingvi', help="different routes for different webservices (default: %(default)s)")
+        parser.add_argument('--agency', default='ingv', help="different routes for different webservices (default: %(default)s)")
         if len(sys.argv) <= 1:
             parser.print_help()
             sys.exit(1)
