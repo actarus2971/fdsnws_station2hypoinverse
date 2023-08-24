@@ -145,7 +145,11 @@ for ns in stations_list:
 #['IV','AQU', ''  ,'SHZ','42.35388','13.40193', '729', '0' , '0' , '-90', 'GEOTECH S-13', '582216000', '0.2', 'm/s', '50', '2003-03-01T00:00:00', '2008-10-15T00:00:00']
 df = pandas.DataFrame(stations, columns =['net','sta','loc','cha','lat','lon','ele','dep','azi','dip','inst','const','per','unit','samp','start','stop'])
 if fmt == 'he':
-   df['alias'] = numpy.where(df['sta'].str.len().isin({5,7}), 'AAAA', df['sta'])
+   df['alias'] = df['sta']
+   df['increment'] = df['sta'].str.len().isin({5,7}).cumsum()
+   df['alias'] = numpy.where(    df['increment']-df['increment'].shift(1,fill_value=df['increment'][0]) > 0           , 'A'+df['increment'].map('{:03.0f}'.format).astype(str), df['alias'])
+   #df.loc[df['increment']-df['increment'].shift(1,fill_value=df['increment'][0]) > 0,'alias'] = 'A'+int(df['increment'])
+   print(df)
    df['lenght'] = df['alias'].str.len()
    df=df.sort_values(['lenght','alias'],ascending=[True,True])
    outwrite = tohe(df)
