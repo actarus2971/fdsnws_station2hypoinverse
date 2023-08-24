@@ -125,8 +125,7 @@ for ns in stations_list:
     r,u = getxml(sta,net,loc,ws_route['base_url'],ws_route['in_options'])
     stations.append(list(r.decode('utf-8').split('\n'))[1].split('|')) 
     #print(list(r.decode('utf-8').split('\n'))[1])
-#['IV', 'AQU', '', 'SHZ', '42.35388', '13.40193', '729', '0', '0', '-90', 'GEOTECH S-13', '582216000', '0.2', 'm/s', '50', '2003-03-01T00:00:00', '2008-10-15T00:00:00']
-print(len(stations))
-df = pandas.DataFrame(stations, columns =['net','sta','loc','cha','lat','lon','ele','dep','or1','or22','or3','inst','const','per','unit','samp','start','stop'])
+#['IV','AQU', ''  ,'SHZ','42.35388','13.40193', '729', '0' , '0' , '-90', 'GEOTECH S-13', '582216000', '0.2', 'm/s', '50', '2003-03-01T00:00:00', '2008-10-15T00:00:00']
+df = pandas.DataFrame(stations, columns =['net','sta','loc','cha','lat','lon','ele','dep','azi','dip','inst','const','per','unit','samp','start','stop'])
 print(df)
 
