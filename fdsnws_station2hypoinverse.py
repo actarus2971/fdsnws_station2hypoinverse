@@ -6,6 +6,7 @@ import json
 import decimal
 import pandas
 import configparser as cp
+import numpy
 
 from datetime import datetime
 from xml.etree import ElementTree as ET
@@ -86,6 +87,20 @@ def stations_format(sl,fmt):
        slo = to_hypoinverse2(sl)
     return slo
 
+def tohe(d):
+    s=''
+    for index, row in d.iterrows():
+        code = row['alias']
+        ilat = int(float(row['lat']))
+        flat = (float(row['lat']) - ilat) * 60.
+        ilon = int(float(row['lon']))
+        flon = (float(row['lon']) - ilon) * 60.
+        elev = int(float(row['ele']) - float(row['dep']))
+        s1 = "%4s%2iN%5.2f %3iE%5.2f %4i\n" % (code,ilat,flat,ilon,flon,elev)
+        s2 = "%4s*     0     1.00\n" % (code)
+        s=s+s1+s2
+    return s
+
 ################## MAIN ####################
 args=parseArguments()
 
@@ -101,6 +116,8 @@ else:
           except Exception as e:
               print(e)
               sys.exit()
+
+fmt=args.format.lower()
 
 if os.path.exists(args.conf) and os.path.getsize(args.conf) > 0:
    paramfile=args.conf
@@ -127,5 +144,9 @@ for ns in stations_list:
     #print(list(r.decode('utf-8').split('\n'))[1])
 #['IV','AQU', ''  ,'SHZ','42.35388','13.40193', '729', '0' , '0' , '-90', 'GEOTECH S-13', '582216000', '0.2', 'm/s', '50', '2003-03-01T00:00:00', '2008-10-15T00:00:00']
 df = pandas.DataFrame(stations, columns =['net','sta','loc','cha','lat','lon','ele','dep','azi','dip','inst','const','per','unit','samp','start','stop'])
-print(df)
-
+if fmt == 'he':
+   df['alias'] = numpy.where(df['sta'].str.len().isin({5,7}), 'AAAA', df['sta'])
+   df['lenght'] = df['alias'].str.len()
+   df=df.sort_values(['lenght','alias'],ascending=[True,True])
+   outwrite = tohe(df)
+   print(outwrite)
