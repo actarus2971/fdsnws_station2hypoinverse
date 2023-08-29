@@ -117,7 +117,9 @@ else:
               print(e)
               sys.exit()
 
-fmt=args.format.lower()
+if args.format:
+   fmts = args.format.split(',')
+   fmts = [x.lower() for x in fmts]
 
 if os.path.exists(args.conf) and os.path.getsize(args.conf) > 0:
    paramfile=args.conf
