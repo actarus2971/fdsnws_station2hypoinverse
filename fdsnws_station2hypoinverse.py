@@ -61,7 +61,6 @@ def getxml(st,nt,lo,bu,op):
         urltext=bu + "query?station=" + st + "&network=" + nt + op
     else:
         urltext=bu + "query?station=" + st + "&network=" + nt + "&location=" + lo + op
-        print(urltext)
     try:
         req = urllib.request.Request(url=urltext)
         try:
@@ -74,7 +73,8 @@ def getxml(st,nt,lo,bu,op):
         print("Query in Request (outer)\n",e)
         print(urltext)
         sys.exit(1)
-    return res.read(),urltext
+    rr = res.read()
+    return rr,urltext,len(rr)
 
 #def to_hypoellipse(stl):
 #    for s in stl:
@@ -153,9 +153,12 @@ except Exception as e:
 stations=[]
 for ns in stations_list:
     net,sta,loc = ns.split()
-    r,u = getxml(sta,net,loc,ws_route['base_url'],ws_route['in_options'])
-    stations.append(list(r.decode('utf-8').split('\n'))[1].split('|')) 
-    #print(list(r.decode('utf-8').split('\n'))[1])
+    r,u,l = getxml(sta,net,loc,ws_route['base_url'],ws_route['in_options'])
+    if l > 0:
+       rr = r.decode('utf-8').split('\n')[1]
+       stations.append(list(rr.split('|'))) 
+    else:
+       print("Station: ",net,sta,loc," is not restituted by the WS")
 #['IV','AQU', ''  ,'SHZ','42.35388','13.40193', '729', '0' , '0' , '-90', 'GEOTECH S-13', '582216000', '0.2', 'm/s', '50', '2003-03-01T00:00:00', '2008-10-15T00:00:00']
 df = pandas.DataFrame(stations, columns =['net','sta','loc','cha','lat','lon','ele','dep','azi','dip','inst','const','per','unit','samp','start','stop'])
 
