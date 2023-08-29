@@ -87,7 +87,7 @@ def stations_format(sl,fmt):
        slo = to_hypoinverse2(sl)
     return slo
 
-def tohe(d):
+def to_out(d,fn):
     s=''
     for index, row in d.iterrows():
         code = row['alias']
@@ -96,8 +96,12 @@ def tohe(d):
         ilon = int(float(row['lon']))
         flon = (float(row['lon']) - ilon) * 60.
         elev = int(float(row['ele']) - float(row['dep']))
-        s1 = "%4s%2iN%5.2f %3iE%5.2f %4i\n" % (code,ilat,flat,ilon,flon,elev)
-        s2 = "%4s*     0     1.00\n" % (code)
+        if fn == 'he':
+           s1 = "%4s%2iN%5.2f %3iE%5.2f %4i\n" % (code,ilat,flat,ilon,flon,elev)
+           s2 = "%4s*     0     1.00\n" % (code)
+        elif fn == 'hi1':
+           s1 = "%4s %2i %5.2fN%3i %5.2fE%4i\n" % (code,ilat,flat,ilon,flon,elev)
+           s2 = ""
         s=s+s1+s2
     return s
 
@@ -160,6 +164,6 @@ df['lenght'] = df['alias'].str.len()
 df=df.sort_values(['lenght','alias'],ascending=[True,True])
 for f in fmts:
    of = open(files_name[f],'w')
-   outwrite = tohe(df)
+   outwrite = to_out(df,f)
    of.write(outwrite)
    of.close()
