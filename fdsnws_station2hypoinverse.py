@@ -130,10 +130,16 @@ else:
 confObj = cp.ConfigParser()
 confObj.read(paramfile)
 
-# Metadata configuration
+# Configuration parameters loading
 agency_name = args.agency.lower()
 try:
     ws_route = get_config_dictionary(confObj, agency_name)
+except Exception as e:
+    print(e)
+    sys.exit(1)
+
+try:
+    files_name = get_config_dictionary(confObj, 'files_name')
 except Exception as e:
     print(e)
     sys.exit(1)
@@ -146,13 +152,14 @@ for ns in stations_list:
     #print(list(r.decode('utf-8').split('\n'))[1])
 #['IV','AQU', ''  ,'SHZ','42.35388','13.40193', '729', '0' , '0' , '-90', 'GEOTECH S-13', '582216000', '0.2', 'm/s', '50', '2003-03-01T00:00:00', '2008-10-15T00:00:00']
 df = pandas.DataFrame(stations, columns =['net','sta','loc','cha','lat','lon','ele','dep','azi','dip','inst','const','per','unit','samp','start','stop'])
-if fmt == 'he':
-   df['alias'] = df['sta']
-   df['increment'] = df['sta'].str.len().isin({5,7}).cumsum()
-   df['alias'] = numpy.where(    df['increment']-df['increment'].shift(1,fill_value=df['increment'][0]) > 0           , 'A'+df['increment'].map('{:03.0f}'.format).astype(str), df['alias'])
-   #df.loc[df['increment']-df['increment'].shift(1,fill_value=df['increment'][0]) > 0,'alias'] = 'A'+int(df['increment'])
-   print(df)
-   df['lenght'] = df['alias'].str.len()
-   df=df.sort_values(['lenght','alias'],ascending=[True,True])
+
+df['alias'] = df['sta']
+df['increment'] = df['sta'].str.len().isin({5,7}).cumsum()
+df['alias'] = numpy.where(    df['increment']-df['increment'].shift(1,fill_value=df['increment'][0]) > 0           , 'A'+df['increment'].map('{:03.0f}'.format).astype(str), df['alias'])
+df['lenght'] = df['alias'].str.len()
+df=df.sort_values(['lenght','alias'],ascending=[True,True])
+for f in fmts:
+   of = open(files_name[f],'w')
    outwrite = tohe(df)
-   print(outwrite)
+   of.write(outwrite)
+   of.close()
