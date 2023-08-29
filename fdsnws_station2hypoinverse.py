@@ -67,10 +67,12 @@ def getxml(st,nt,lo,bu,op):
         try:
             res = urllib.request.urlopen(req)
         except Exception as e:
-            print("Query in urlopen\n",e)
+            print("Query in urlopen (inner)\n",e)
+            print(urltext)
             sys.exit(1)
     except Exception as e:
-        print("Query in Request\n",e)
+        print("Query in Request (outer)\n",e)
+        print(urltext)
         sys.exit(1)
     return res.read(),urltext
 
@@ -150,7 +152,7 @@ except Exception as e:
 
 stations=[]
 for ns in stations_list:
-    net,sta,loc = ns.split(' ')
+    net,sta,loc = ns.split()
     r,u = getxml(sta,net,loc,ws_route['base_url'],ws_route['in_options'])
     stations.append(list(r.decode('utf-8').split('\n'))[1].split('|')) 
     #print(list(r.decode('utf-8').split('\n'))[1])
