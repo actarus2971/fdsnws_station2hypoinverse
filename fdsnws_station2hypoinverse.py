@@ -168,6 +168,7 @@ df['increment'] = df['sta'].str.len().isin({5,7}).cumsum()
 df['alias'] = numpy.where(    df['increment']-df['increment'].shift(1,fill_value=df['increment'][0]) > 0           , 'A'+df['increment'].map('{:03.0f}'.format).astype(str), df['alias'])
 df['lenght'] = df['alias'].str.len()
 df=df.sort_values(['lenght','alias'],ascending=[True,True])
+df.to_csv('./allALIASES.sta', sep=',')
 for f in fmts:
    of = open(files_name[f],'w')
    outwrite = to_out(df,f)
