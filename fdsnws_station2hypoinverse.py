@@ -160,7 +160,7 @@ for ns in stations_list:
     else:
        print("Station: ",net,sta,loc," is not restituted by the WS")
 #['IV','AQU', ''  ,'SHZ','42.35388','13.40193', '729', '0' , '0' , '-90', 'GEOTECH S-13', '582216000', '0.2', 'm/s', '50', '2003-03-01T00:00:00', '2008-10-15T00:00:00']
-print(stations)
+#print(stations)
 df = pandas.DataFrame(stations, columns =['net','sta','loc','cha','lat','lon','ele','dep','azi','dip','inst','const','per','unit','samp','start','stop'])
 
 df['alias'] = df['sta']
