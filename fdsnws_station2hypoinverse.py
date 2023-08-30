@@ -163,12 +163,20 @@ for ns in stations_list:
 #print(stations)
 df = pandas.DataFrame(stations, columns =['net','sta','loc','cha','lat','lon','ele','dep','azi','dip','inst','const','per','unit','samp','start','stop'])
 
-df['alias'] = df['sta']
-df['increment'] = df['sta'].str.len().isin({5,7}).cumsum()
-df['alias'] = numpy.where(    df['increment']-df['increment'].shift(1,fill_value=df['increment'][0]) > 0           , 'A'+df['increment'].map('{:03.0f}'.format).astype(str), df['alias'])
+df_short = df[df['sta'].str.len() <= 4].copy()
+df_long = df[df['sta'].str.len() > 4].copy()
+
+df_long['increment'] = df_long['sta'].str.len().isin({5,7}).cumsum()
+df_short['increment'] = 0
+df_short['alias'] = df_short['sta']
+df_long['alias'] = df_short['sta']
+df_long['alias'] = 'A'+df_long['increment'].map('{:03.0f}'.format).astype(str)
+frames = [df_short,df_long]
+df = pandas.concat(frames)
 df['lenght'] = df['alias'].str.len()
 df=df.sort_values(['lenght','alias'],ascending=[True,True])
-df.to_csv('./allALIASES.sta', sep=',')
+df=df.drop(['lenght','increment'],axis=1)
+df.to_csv('./allALIASES.sta', sep=',',index=False)
 for f in fmts:
    of = open(files_name[f],'w')
    outwrite = to_out(df,f)
