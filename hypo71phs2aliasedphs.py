@@ -35,9 +35,12 @@ for l in hypo71phs:
        if l[77] == " ":
           print(l[:76])
        else:
-          print(l[:4]+l[77])
+          sta=l[:4]+l[77]
+          net=l[81:83]
+          loc=l[83:85]
+          alias=df_aliases.loc[(df_aliases['sta']==sta) & (df_aliases['net']==net)]['alias'].values[0]
+          print(alias+l[4:76])
     else:
        print(l.rstrip())
-
 
 file_phs.close()
